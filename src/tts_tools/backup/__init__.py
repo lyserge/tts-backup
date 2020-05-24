@@ -84,7 +84,7 @@ def backup_json(args):
         outfile.write(orig_json, os.path.basename(args.infile_name))
 
         # Store some metadata.
-        outfile.put_metadata(comment=args.comment)
+        outfile.put_metadata(comment=args.comment, info_filename=args.infile_name)
 
     if args.dry_run:
         print("Dry run for {file} completed.".format(file=args.infile_name))

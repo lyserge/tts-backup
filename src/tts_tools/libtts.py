@@ -8,6 +8,7 @@ OBJPATH = os.path.join("Mods", "Models")
 BUNDLEPATH = os.path.join("Mods", "Assetbundles")
 AUDIOPATH = os.path.join("Mods", "Audio")
 PDFPATH = os.path.join("Mods", "PDF")
+WORKSHOPPATH = os.path.join("Mods", "Workshop")
 
 gamedata_map = {
   'Windows': '~/Documents/My Games/Tabletop Simulator',

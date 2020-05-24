@@ -36,17 +36,22 @@ class ZipFile (zipfile.ZipFile):
     file to disk.
     """
 
-    def __init__(self, *args,
+    def __init__(self,
+                 file,
+                 mode='r',
+                 *args,
                  dry_run=False,
                  ignore_missing=False,
+                 rewrite=False,
                  **kwargs):
 
         self.dry_run = dry_run
         self.stored_files = set()
         self.ignore_missing = ignore_missing
+        self.rewrite = rewrite
 
-        if not self.dry_run:
-            super().__init__(*args, **kwargs)
+        if mode=='r' or not self.dry_run:
+            super().__init__(file, mode, *args, **kwargs)
 
     def __exit__(self, *args, **kwargs):
 
@@ -84,7 +89,27 @@ class ZipFile (zipfile.ZipFile):
 
         self.stored_files.add(filename)
 
-    def put_metadata(self, comment=None):
+    def extract(self, member, path, *args, **kwargs):
+        absname = os.path.join(path, member.filename)
+        log_skipped = lambda: print("{} (already exists)".format(absname))
+        log_write_error = lambda: print("{} (could not write)".format(absname))
+        log_written = lambda: print(absname)
+
+        if (os.path.isfile(absname) and not self.rewrite):
+            log_skipped()
+            print('skipping because file already exists')
+        else:
+            try:
+                if not self.dry_run:
+                    super().extract(member, path, *args, **kwargs)
+            except:
+                log_write_error()
+                raise
+            else:
+                log_written()
+
+
+    def put_metadata(self, comment=None, info_filename=None):
         """Create a MANIFEST file and store it within the archive."""
 
         manifest = dict(script_revision=REVISION,
@@ -92,9 +117,16 @@ class ZipFile (zipfile.ZipFile):
 
         if comment:
             manifest['comment'] = comment
+        if info_filename:
+            manifest['info_filename'] = info_filename
 
         manifest = json.dumps(manifest)
         self.comment = manifest.encode('utf-8')
+
+
+    def get_metadata(self):
+        """Read metadata from the MANIFEST file in the archive."""
+        return json.loads(self.comment)
 
 
 def print_err(*args, **kwargs):

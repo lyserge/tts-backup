@@ -40,6 +40,7 @@ setup(
         'tts_tools',
         'tts_tools.backup',
         'tts_tools.prefetch',
+        'tts_tools.restore',
         'tts_tools.libgui'
     ],
     package_dir={'': 'src'},
@@ -47,7 +48,8 @@ setup(
     entry_points={
         'console_scripts': [
             'tts-backup = tts_tools.backup.cli:console_entry',
-            'tts-prefetch = tts_tools.prefetch.cli:console_entry'
+            'tts-prefetch = tts_tools.prefetch.cli:console_entry',
+            'tts-restore = tts_tools.restore.cli:console_entry'
         ],
         'gui_scripts': [
             'tts-backup-gui = tts_tools.backup.gui:gui_entry',
